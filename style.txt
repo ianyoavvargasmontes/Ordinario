@@ -1,0 +1,60 @@
+:root {
+    --neon: #00e5ff;
+    --neon-soft: rgba(0, 229, 255, 0.35);
+    --dark-bg: #0b0f19;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top, #111726, #05070d);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e5eaff;
+}
+
+.container {
+    background: rgba(12, 18, 30, 0.75);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 16px;
+    width: 420px;
+    text-align: center;
+    border: 1px solid var(--neon);
+    box-shadow: 
+        0 0 20px var(--neon-soft),
+        inset 0 0 15px var(--neon-soft);
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid var(--neon-soft);
+    border-radius: 8px;
+    color: var(--neon);
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 18px;
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-soft);
+}
+
+button:hover {
+    background: var(--neon);
+    color: #000;
+}
+
+canvas {
+    margin-top: 25px;
+}

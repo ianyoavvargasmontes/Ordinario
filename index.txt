@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Trends Clishboard</title>
+
+    <!-- Fuente futurista -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌐 Weather Trends</h1>
+
+    <input type="text" id="cityInput" placeholder="Ciudad o Coordenadas (lat,lon)">
+    <select id="daysSelect">
+        <option value="5">Próximos 5 días</option>
+        <option value="10">Próximos 10 días</option>
+    </select>
+
+    <button id="searchBtn">Buscar</button>
+
+    <!-- Estado de carga -->
+    <div id="loading" style="display:none;">
+        <p>⏳ Cargando datos...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <p id="errorMsg" style="display:none; color:red;"></p>
+
+    <!-- Gráfica -->
+    <canvas id="weatherChart"></canvas>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
