@@ -17,11 +17,7 @@ async function fetchWeather() {
 
     try {
         const url = `
-        https://api.open-meteo.com/v1/forecast
-        ?latitude=-11.4087
-        &longitude=-69.3032
-        &hourly=temperature_2m
-        &timezone=auto
+       https://api.open-meteo.com/v1/forecast?latitude=23&longitude=-102&hourly=temperature_2m,temperature_80m,temperature_120m,temperature_180m
         `;
 
         const response = await fetch(url);
