@@ -1,35 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Panel de Trends Clishboard</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <title>Panel de Trends Clishboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="header">
-  <h1>Panel de Trends Clishboard</h1>
+<header>
+    <h1>Panel de Trends Clishboard</h1>
 </header>
 
 <section class="search-box">
-  <input type="text" id="cityInput" placeholder="City o lat,lon (ej: 19.43,-99.13)">
-  <button id="btnSearch">Search</button>
+    <input id="cityInput" type="text" placeholder="City / Coordinates (lat,lon)">
+    <button id="searchBtn">Search</button>
 </section>
 
-<section id="status" class="status hidden">
-  <div class="spinner"></div>
-  <p>Loading data... Please wait.</p>
+<section id="statusBox" class="status hidden">
+    <div class="spinner"></div>
+    <p>Loading data... Please wait.</p>
 </section>
 
-<section class="chart-container hidden" id="chartBox">
-  <canvas id="weatherChart"></canvas>
+<section id="chartBox" class="chart hidden">
+    <canvas id="weatherChart"></canvas>
 </section>
 
-<div class="color-key">
-  <span class="red"></span> TEMP > 30°C
-  <span class="blue"></span> TEMP < 10°C
-</div>
+<section id="errorMsg" class="error hidden"></section>
+
+<footer class="legend">
+    <span class="hot">● Temp &gt; 30°C</span>
+    <span class="cold">● Temp &lt; 10°C</span>
+</footer>
 
 <script src="app.js"></script>
 </body>
