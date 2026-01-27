@@ -1,94 +1,87 @@
-let chartInstance = null;
+const btn = document.getElementById("btnSearch");
+const input = document.getElementById("cityInput");
+const statusBox = document.getElementById("status");
+const chartBox = document.getElementById("chartBox");
 
-const button = document.getElementById("searchBtn");
-const loading = document.getElementById("loading");
-const errorMsg = document.getElementById("errorMsg");
+let chart = null;
 
-button.addEventListener("click", fetchWeather);
+btn.addEventListener("click", () => {
+  if (!input.value) return alert("Ingresa ciudad o coordenadas");
+  loadWeather(input.value);
+});
 
-async function fetchWeather() {
+async function loadWeather(query) {
+  try {
+    showLoading();
 
-    loading.style.display = "block";
-    errorMsg.style.display = "none";
+    let lat, lon;
 
-    if (chartInstance) {
-        chartInstance.destroy(); // Control de memoria
+    if (query.includes(",")) {
+      [lat, lon] = query.split(",");
+    } else {
+      const geo = await fetch("https://geocoding-api.open-meteo.com/v1/search?name=${query}");
+      const geoData = await geo.json();
+      lat = geoData.results[0].latitude;
+      lon = geoData.results[0].longitude;
     }
 
-    try {
-        const url = `
-        https://api.open-meteo.com/v1/forecast
-        ?latitude=-11.4087
-        &longitude=-69.3032
-        &hourly=temperature_2m
-        &timezone=auto
-        `;
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max&timezone=auto";
 
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la API");
+    const res = await fetch(url);
+    const data = await res.json();
 
-        const data = await response.json();
+    const labels = data.daily.time;
+    const temps = data.daily.temperature_2m_max;
 
-        // 🔹 Tomamos SOLO las próximas 48 horas
-        const labels = data.hourly.time.slice(0, 48)
-            .map(t => t.replace("T", " "));
+    renderChart(labels, temps);
+    showChart();
 
-        const temperatures = data.hourly.temperature_2m.slice(0, 48);
-
-        // 🔹 Lógica de color
-        let color = "#00e5ff";
-        if (temperatures.some(t => t > 30)) color = "red";
-        if (temperatures.some(t => t < 10)) color = "blue";
-
-        drawChart(labels, temperatures, color);
-
-    } catch (error) {
-        errorMsg.textContent = "❌ Error al cargar datos meteorológicos";
-        errorMsg.style.display = "block";
-    } finally {
-        loading.style.display = "none";
-    }
+  } catch (error) {
+    showError();
+  }
 }
 
-function drawChart(labels, data, color) {
+function renderChart(labels, temps) {
+  if (chart) chart.destroy();
 
-    const ctx = document.getElementById("weatherChart").getContext("2d");
+  let color = "green";
+  if (Math.max(...temps) > 30) color = "red";
+  if (Math.min(...temps) < 10) color = "blue";
 
-    chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [{
-                label: "Temperatura por hora (°C)",
-                data,
-                borderColor: color,
-                backgroundColor: color,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    enabled: true
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Hora"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Temperatura °C"
-                    }
-                }
-            }
-        }
-    });
+  const ctx = document.getElementById("weatherChart");
+
+  chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Temperatura °C",
+        data: temps,
+        borderColor: color,
+        backgroundColor: color,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: "index",
+        intersect: false
+      }
+    }
+  });
+}
+
+function showLoading() {
+  statusBox.classList.remove("hidden");
+  chartBox.classList.add("hidden");
+}
+
+function showChart() {
+  statusBox.classList.add("hidden");
+  chartBox.classList.remove("hidden");
+}
+
+function showError() {
+  statusBox.innerHTML = "<p>Error al obtener datos 😢</p>";
 }
