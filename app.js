@@ -3,6 +3,7 @@ let chartInstance = null;
 const button = document.getElementById("searchBtn");
 const loading = document.getElementById("loading");
 const errorMsg = document.getElementById("errorMsg");
+const cityInput = document.getElementById("cityInput");
 
 button.addEventListener("click", fetchWeather);
 
@@ -16,8 +17,42 @@ async function fetchWeather() {
     }
 
     try {
+
+        let lat, lon;
+        const query = cityInput.value.trim();
+
+        if (!query) {
+            alert("Ingresa una ciudad o coordenadas");
+            return;
+        }
+
+        // 🔹 SI son coordenadas (lat,lon)
+        if (query.includes(",")) {
+            [lat, lon] = query.split(",");
+        } 
+        // 🔹 SI es nombre de ciudad → GEO
+        else {
+            const geo = await fetch(
+                `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
+            );
+
+            const geoData = await geo.json();
+
+            if (!geoData.results || geoData.results.length === 0) {
+                throw new Error("Ciudad no encontrada");
+            }
+
+            lat = geoData.results[0].latitude;
+            lon = geoData.results[0].longitude;
+        }
+
+        // 🔹 API meteorológica con coordenadas dinámicas
         const url = `
-       https://api.open-meteo.com/v1/forecast?latitude=23&longitude=-102&hourly=temperature_2m,temperature_80m,temperature_120m,temperature_180m
+        https://api.open-meteo.com/v1/forecast
+        ?latitude=${lat}
+        &longitude=${lon}
+        &hourly=temperature_2m,temperature_80m,temperature_120m,temperature_180m
+        &timezone=auto
         `;
 
         const response = await fetch(url);
@@ -25,7 +60,7 @@ async function fetchWeather() {
 
         const data = await response.json();
 
-        // 🔹 Tomamos SOLO las próximas 48 horas
+        // 🔹 Próximas 48 horas
         const labels = data.hourly.time.slice(0, 48)
             .map(t => t.replace("T", " "));
 
