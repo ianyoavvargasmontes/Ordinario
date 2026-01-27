@@ -1,94 +1,87 @@
-let chartInstance = null;
+const btn = document.getElementById("btnSearch");
+const input = document.getElementById("cityInput");
+const statusBox = document.getElementById("status");
+const chartBox = document.getElementById("chartBox");
 
-const button = document.getElementById("searchBtn");
-const loading = document.getElementById("loading");
-const errorMsg = document.getElementById("errorMsg");
-const cityInput = document.getElementById("cityInput");
+let chart = null;
 
-button.addEventListener("click", fetchWeather);
+btn.addEventListener("click", () => {
+  if (!input.value) return alert("Ingresa ciudad o coordenadas");
+  loadWeather(input.value);
+});
 
-async function fetchWeather() {
+async function loadWeather(query) {
+  try {
+    showLoading();
 
-    loading.style.display = "block";
-    errorMsg.style.display = "none";
+    let lat, lon;
 
-    if (chartInstance) {
-        chartInstance.destroy();
+    if (query.includes(",")) {
+      [lat, lon] = query.split(",");
+    } else {
+      const geo = await fetch("https://geocoding-api.open-meteo.com/v1/search?name=${query}");
+      const geoData = await geo.json();
+      lat = geoData.results[0].latitude;
+      lon = geoData.results[0].longitude;
     }
 
-    try {
-        let lat, lon;
-        const query = cityInput.value.trim();
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max&timezone=auto";
 
-        if (!query) {
-            alert("Ingresa una ciudad o coordenadas");
-            loading.style.display = "none";
-            return;
-        }
+    const res = await fetch(url);
+    const data = await res.json();
 
-        // 🔹 Coordenadas directas
-        if (query.includes(",")) {
-            [lat, lon] = query.split(",");
-        }
-        // 🔹 Geocoding por ciudad
-        else {
-            const geo = await fetch(
-                `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
-            );
+    const labels = data.daily.time;
+    const temps = data.daily.temperature_2m_max;
 
-            const geoData = await geo.json();
+    renderChart(labels, temps);
+    showChart();
 
-            if (!geoData.results || geoData.results.length === 0) {
-                throw new Error("Ciudad no encontrada");
-            }
-
-            lat = geoData.results[0].latitude;
-            lon = geoData.results[0].longitude;
-        }
-
-        // 🔹 URL CORRECTA (una sola línea)
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m&timezone=auto`;
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la API");
-
-        const data = await response.json();
-
-        const labels = data.hourly.time.slice(0, 48).map(t => t.replace("T", " "));
-        const temperatures = data.hourly.temperature_2m.slice(0, 48);
-
-        let color = "#00e5ff";
-        if (temperatures.some(t => t > 30)) color = "red";
-        if (temperatures.some(t => t < 10)) color = "blue";
-
-        drawChart(labels, temperatures, color);
-
-    } catch (error) {
-        console.error(error);
-        errorMsg.textContent = "❌ Error al cargar datos meteorológicos";
-        errorMsg.style.display = "block";
-    } finally {
-        loading.style.display = "none";
-    }
+  } catch (error) {
+    showError();
+  }
 }
 
-function drawChart(labels, data, color) {
-    const ctx = document.getElementById("weatherChart").getContext("2d");
+function renderChart(labels, temps) {
+  if (chart) chart.destroy();
 
-    chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [{
-                label: "Temperatura por hora (°C)",
-                data,
-                borderColor: color,
-                backgroundColor: color,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+  let color = "green";
+  if (Math.max(...temps) > 30) color = "red";
+  if (Math.min(...temps) < 10) color = "blue";
+
+  const ctx = document.getElementById("weatherChart");
+
+  chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Temperatura °C",
+        data: temps,
+        borderColor: color,
+        backgroundColor: color,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: "index",
+        intersect: false
+      }
+    }
+  });
+}
+
+function showLoading() {
+  statusBox.classList.remove("hidden");
+  chartBox.classList.add("hidden");
+}
+
+function showChart() {
+  statusBox.classList.add("hidden");
+  chartBox.classList.remove("hidden");
+}
+
+function showError() {
+  statusBox.innerHTML = "<p>Error al obtener datos 😢</p>";
 }
