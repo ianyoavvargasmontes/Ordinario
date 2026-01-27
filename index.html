@@ -4,37 +4,39 @@
     <meta charset="UTF-8">
     <title>Panel de Trends Clishboard</title>
 
+    <!-- Fuente futurista -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css">
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Panel de Trends Clishboard</h1>
-</header>
+<div class="container">
+    <h1>🌐 Weather Trends</h1>
 
-<section class="search-box">
-    <input id="cityInput" type="text" placeholder="City / Coordinates (lat,lon)">
-    <button id="searchBtn">Search</button>
-</section>
+    <input type="text" id="cityInput" placeholder="Ciudad o Coordenadas (lat,lon)">
+    <select id="daysSelect">
+        <option value="5">Próximos 5 días</option>
+        <option value="10">Próximos 10 días</option>
+    </select>
 
-<section id="statusBox" class="status hidden">
-    <div class="spinner"></div>
-    <p>Loading data... Please wait.</p>
-</section>
+    <button id="searchBtn">Buscar</button>
 
-<section id="chartBox" class="chart hidden">
+    <!-- Estado de carga -->
+    <div id="loading" style="display:none;">
+        <p>⏳ Cargando datos...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <p id="errorMsg" style="display:none; color:red;"></p>
+
+    <!-- Gráfica -->
     <canvas id="weatherChart"></canvas>
-</section>
-
-<section id="errorMsg" class="error hidden"></section>
-
-<footer class="legend">
-    <span class="hot">● Temp &gt; 30°C</span>
-    <span class="cold">● Temp &lt; 10°C</span>
-</footer>
+</div>
 
 <script src="app.js"></script>
 </body>
