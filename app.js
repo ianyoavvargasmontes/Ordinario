@@ -13,24 +13,24 @@ async function fetchWeather() {
     errorMsg.style.display = "none";
 
     if (chartInstance) {
-        chartInstance.destroy(); // Control de memoria
+        chartInstance.destroy();
     }
 
     try {
-
         let lat, lon;
         const query = cityInput.value.trim();
 
         if (!query) {
             alert("Ingresa una ciudad o coordenadas");
+            loading.style.display = "none";
             return;
         }
 
-        // 🔹 SI son coordenadas (lat,lon)
+        // 🔹 Coordenadas directas
         if (query.includes(",")) {
             [lat, lon] = query.split(",");
-        } 
-        // 🔹 SI es nombre de ciudad → GEO
+        }
+        // 🔹 Geocoding por ciudad
         else {
             const geo = await fetch(
                 `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
@@ -46,27 +46,17 @@ async function fetchWeather() {
             lon = geoData.results[0].longitude;
         }
 
-        // 🔹 API meteorológica con coordenadas dinámicas
-        const url = `
-        https://api.open-meteo.com/v1/forecast
-        ?latitude=${lat}
-        &longitude=${lon}
-        &hourly=temperature_2m,temperature_80m,temperature_120m,temperature_180m
-        &timezone=auto
-        `;
+        // 🔹 URL CORRECTA (una sola línea)
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m&timezone=auto`;
 
         const response = await fetch(url);
         if (!response.ok) throw new Error("Error en la API");
 
         const data = await response.json();
 
-        // 🔹 Próximas 48 horas
-        const labels = data.hourly.time.slice(0, 48)
-            .map(t => t.replace("T", " "));
-
+        const labels = data.hourly.time.slice(0, 48).map(t => t.replace("T", " "));
         const temperatures = data.hourly.temperature_2m.slice(0, 48);
 
-        // 🔹 Lógica de color
         let color = "#00e5ff";
         if (temperatures.some(t => t > 30)) color = "red";
         if (temperatures.some(t => t < 10)) color = "blue";
@@ -74,6 +64,7 @@ async function fetchWeather() {
         drawChart(labels, temperatures, color);
 
     } catch (error) {
+        console.error(error);
         errorMsg.textContent = "❌ Error al cargar datos meteorológicos";
         errorMsg.style.display = "block";
     } finally {
@@ -82,7 +73,6 @@ async function fetchWeather() {
 }
 
 function drawChart(labels, data, color) {
-
     const ctx = document.getElementById("weatherChart").getContext("2d");
 
     chartInstance = new Chart(ctx, {
@@ -94,32 +84,11 @@ function drawChart(labels, data, color) {
                 data,
                 borderColor: color,
                 backgroundColor: color,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 7
+                tension: 0.4
             }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    enabled: true
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Hora"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Temperatura °C"
-                    }
-                }
-            }
+            responsive: true
         }
     });
 }
