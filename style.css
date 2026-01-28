@@ -1,60 +1,171 @@
+/* =======================================================
+   ESTILO MINIMAL-FUTURISTIC - CLIMA WEB (TRON)
+   ======================================================= */
+
+/* ---- Variables globales ---- */
 :root {
-    --neon: #00e5ff;
-    --neon-soft: rgba(0, 229, 255, 0.35);
-    --dark-bg: #0b0f19;
+  --neon: #00e5ff;
+  --neon-soft: rgba(0, 229, 255, 0.35);
+  --bg-dark: #0b0f19;
+  --bg-panel: rgba(12, 18, 30, 0.65);
+  --text-main: #e5eaff;
 }
 
+/* ---- Reset básico ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ---- Cuerpo ---- */
 body {
-    font-family: 'Orbitron', sans-serif;
-    background: radial-gradient(circle at top, #111726, #05070d);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e5eaff;
+  background: radial-gradient(circle at top, #11182a, var(--bg-dark));
+  color: var(--text-main);
+  font-family: 'Orbitron', 'Segoe UI', sans-serif;
+  min-height: 100vh;
 }
 
-.container {
-    background: rgba(12, 18, 30, 0.75);
-    backdrop-filter: blur(12px);
-    padding: 30px;
-    border-radius: 16px;
-    width: 420px;
-    text-align: center;
-    border: 1px solid var(--neon);
-    box-shadow: 
-        0 0 20px var(--neon-soft),
-        inset 0 0 15px var(--neon-soft);
+/* ---- Header ---- */
+.header {
+  text-align: center;
+  padding: 30px 20px;
+  border-bottom: 1px solid var(--neon);
+  box-shadow: 0 0 15px var(--neon-soft);
 }
 
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 12px;
-    background: transparent;
-    border: 1px solid var(--neon-soft);
-    border-radius: 8px;
-    color: var(--neon);
-    outline: none;
+.header h1 {
+  color: var(--neon);
+  letter-spacing: 3px;
+  text-shadow: 0 0 12px var(--neon);
 }
 
+/* ---- Caja de búsqueda ---- */
+.search-box,
+.controls {
+  margin: 25px auto;
+  max-width: 600px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-panel);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--neon-soft);
+  box-shadow: 0 0 18px var(--neon-soft);
+  backdrop-filter: blur(8px);
+}
+
+/* ---- Inputs ---- */
+input[type="text"],
+input[type="date"],
+select {
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 8px 10px;
+  border-radius: 8px;
+  outline: none;
+}
+
+input::placeholder {
+  color: #8adfff;
+}
+
+/* ---- Botón ---- */
 button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 18px;
-    background: transparent;
-    color: var(--neon);
-    border: 1px solid var(--neon);
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--neon-soft);
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--neon-soft);
+  transition: all 0.3s ease;
 }
 
 button:hover {
-    background: var(--neon);
-    color: #000;
+  background: var(--neon);
+  color: #000;
+  box-shadow: 0 0 20px var(--neon);
 }
 
-canvas {
-    margin-top: 25px;
+/* ---- Status (cargando / error) ---- */
+.status {
+  margin: 30px auto;
+  text-align: center;
+  max-width: 400px;
+  background: var(--bg-panel);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--neon-soft);
+  box-shadow: 0 0 18px var(--neon-soft);
 }
+
+/* ---- Spinner ---- */
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 10px auto;
+  border: 3px solid var(--neon-soft);
+  border-top: 3px solid var(--neon);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Contenedor del gráfico ---- */
+.chart-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 25px;
+  background: var(--bg-panel);
+  border-radius: 18px;
+  border: 1px solid var(--neon);
+  box-shadow: 0 0 25px var(--neon-soft);
+  backdrop-filter: blur(10px);
+}
+
+/* ---- Leyenda dinámica ---- */
+.dynamic-legend {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--neon);
+}
+
+/* ---- Clave de colores ---- */
+.color-key {
+  margin: 20px auto;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.color-key span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px;
+}
+
+.color-key .red {
+  background: red;
+  box-shadow: 0 0 10px red;
+}
+
+.color-key .blue {
+  background: #0099ff;
+  box-shadow: 0 0 10px #0099ff;
+}
+
+/* ---- Ocultar elementos ---- */
+.hidden {
+  display: none;
+}
+
