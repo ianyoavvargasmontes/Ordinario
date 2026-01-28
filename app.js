@@ -6,7 +6,7 @@ const chartBox = document.getElementById("chartBox");
 let chart = null;
 
 btn.addEventListener("click", () => {
-  if (!input.value) return alert("Ingresa ciudad o coordenadas");
+  if (!input.value) return alert("Busca ciudad o coordenadas");
   loadWeather(input.value);
 });
 
@@ -60,7 +60,7 @@ async function loadWeather(query) {
     const data = await res.json();
 
     if (!data.daily) {
-      showError("La API no devolvió datos válidos");
+      showError("Datos de API no validos");
       return;
     }
 
@@ -70,7 +70,7 @@ async function loadWeather(query) {
 
   } catch (e) {
     console.error(e);
-    showError("Error en la petición");
+    showError("Error de peticion");
   }
 }
 
@@ -89,16 +89,16 @@ function renderChart(labels, temps) {
 
         // Colores por punto
         pointBackgroundColor: temps.map(t =>
-          t > 30 ? "red" : t < 10 ? "blue" : "green"
+          t > 30 ? "red" : t < 10 ? "blue" : "white"
         ),
 
-        borderColor: "green",
+        borderColor: "white",
 
         // Colores por segmento de línea
         segment: {
           borderColor: ctx => {
             const t = ctx.p1.parsed.y;
-            return t > 30 ? "red" : t < 10 ? "blue" : "green";
+            return t > 30 ? "red" : t < 10 ? "blue" : "white";
           }
         },
 
@@ -121,9 +121,9 @@ function updateLegend(temps) {
   const normal = temps.length - hot - cold;
 
   document.getElementById("legend").innerHTML = `
-    🔴 ${hot} días > 30°C <br>
-    🔵 ${cold} días < 10°C <br>
-    🟢 ${normal} días normales
+    🔴 ${hot} días calidos> 30°C <br>
+    🔵 ${cold} días frios< 10°C <br>
+    🟢 ${normal} días templados
   `;
 }
 
@@ -138,7 +138,7 @@ function showChart() {
   chartBox.classList.remove("hidden");
 }
 
-function showError(msg = "Error al obtener datos 😢") {
+function showError(msg = "Carga de datos fallida 💥❌") {
   statusBox.classList.remove("hidden");
   chartBox.classList.add("hidden");
   statusBox.innerHTML = `
