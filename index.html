@@ -2,28 +2,40 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel de Trends Clishboard</title>
+  <title>Clima Web</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <header class="header">
-  <h1>Panel de Trends Clishboard</h1>
+  <h1>El Clima a tu Alcance</h1>
 </header>
 
 <section class="search-box">
   <input type="text" id="cityInput" placeholder="City o lat,lon (ej: 19.43,-99.13)">
-  <button id="btnSearch">Search</button>
+  <button id="btnSearch">Buscar</button>
+</section>
+
+<section class="controls">
+  <label>Fecha inicio:</label>
+  <input type="date" id="dateInput">
+
+  <label>Días:</label>
+  <select id="daysSelect">
+    <option value="5">5 días</option>
+    <option value="10">10 días</option>
+  </select>
 </section>
 
 <section id="status" class="status hidden">
   <div class="spinner"></div>
-  <p>Loading data... Please wait.</p>
+  <p>Cargando datos... Por favor espera.</p>
 </section>
 
 <section class="chart-container hidden" id="chartBox">
   <canvas id="weatherChart"></canvas>
+  <div id="legend" class="dynamic-legend"></div>
 </section>
 
 <div class="color-key">
@@ -31,6 +43,14 @@
   <span class="blue"></span> TEMP < 10°C
 </div>
 
+<!-- Inicializa la fecha primero -->
+<script>
+  document.getElementById("dateInput").value =
+    new Date().toISOString().split("T")[0];
+</script>
+
+<!-- Luego carga la lógica -->
 <script src="app.js"></script>
+
 </body>
 </html>
