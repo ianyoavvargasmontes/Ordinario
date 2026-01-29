@@ -121,10 +121,7 @@ function updateLegend(temps) {
   const normal = temps.length - hot - cold;
 
   document.getElementById("legend").innerHTML = `
-    🔴 ${hot} días calidos> 30°C <br>
-    🔵 ${cold} días frios< 10°C <br>
-    ⚪ ${normal} días templados
-  `;
+    🔴 ${hot} días calidos> 30°C <br> 🔵 ${cold} días frios< 10°C <br>  ⚪ ${normal} días templados`;
 }
 
 
